@@ -65,9 +65,10 @@ end
 Schema::HashList.new([1])
 Schema::IntList.new([1])
 person = Schema::Person.new(name: 'Luke',
-                            ages: ['10'],
-                            properties: [{ name: 'Color', value: 'Blue', hmm: true }])
-p person[:properties].first[:name]
+                            ages: ['25'],
+                            properties: [{ name: 'Favourite Number', value: 10 }])
+p person[:ages]
+p person[:properties].first[:value]
 
 p Route.registered_routes.each do |route_class|
   p route_class.new.respond_to?(:get)
