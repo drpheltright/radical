@@ -41,4 +41,10 @@ describe Radical::Route do
     subject { route.new.handle([:get, :name]) }
     it { is_expected.to be_nil }
   end
+
+  context 'when route given request with path it does not support' do
+    let(:route) { Radical::Route[:name, String].define { def get; end } }
+    subject { route.new.handle([:get, :bob]) }
+    it { is_expected.to be_nil }
+  end
 end
