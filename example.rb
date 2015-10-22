@@ -47,7 +47,14 @@ module Schema
   class Cool
   end
 
-  HashList = Typed::Array[Cool]
+  class Bob
+    def self.coerce(value)
+      new
+    end
+  end
+
+  CoolList = Typed::Array[Cool]
+  BobList = Typed::Array[Bob]
   IntList = Typed::Array[Integer]
 
   PropertyList = Typed::Array[Property]
@@ -62,14 +69,18 @@ def Schema::Cool(any)
   Schema::Cool.new
 end
 
-Schema::HashList.new([1])
-Schema::IntList.new([1])
+p Schema::CoolList.new(['1']).to_a
+p Schema::BobList.new(['1']).to_a
+p Schema::IntList.new(['30']).to_a
+
 person = Schema::Person.new(name: 'Luke',
                             ages: ['25'],
                             properties: [{ name: 'Favourite Number', value: 10 }])
-p person[:ages]
-p person[:properties].first[:value]
+p person.to_h
 
-p Route.registered_routes.each do |route_class|
-  p route_class.new.respond_to?(:get)
+Route.registered_routes.each do |route_class|
+  p route_class
 end
+
+router = Router.new(Route.registered_routes.map(&:new))
+p router.route([[:get, :products]])
