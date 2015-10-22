@@ -51,16 +51,16 @@ module Radical
       return nil unless respond_to?(method)
 
       case method
+      when :get
+        if matches_path?(path)
+          { path.first => Typed::Coercer.coerce(self.class.type, get) }
+        end
       when :set
         *path, value = path
 
         if matches_path?(path)
           set(value)
           call(:get, path)
-        end
-      when :get
-        if matches_path?(path)
-          { path.first => Typed::Coercer.coerce(self.class.type, get) }
         end
       end
     end
