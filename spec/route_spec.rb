@@ -36,7 +36,7 @@ describe Radical::Route do
     end
   end
 
-  context 'when calling undefined method' do
+  context 'when route given request with method it does not support' do
     let(:route) { Radical::Route[:name, String] }
     subject { route.new.handle([:get, :name]) }
     it { is_expected.to be_nil }
