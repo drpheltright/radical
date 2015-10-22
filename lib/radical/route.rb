@@ -9,11 +9,19 @@ module Radical
       Route.registered_routes[index] = replacement
     end
 
-    def self.[](*args)
+    def self.[](*path)
       Class.new(self).tap do |route_class|
+        route_class.type = path.pop
+        route_class.path = path
         Route.registered_routes << route_class
       end
     end
+
+    def self.path=(path); @path = path; end
+    def self.path; @path; end
+
+    def self.type=(type); @type = type; end
+    def self.type; @type; end
 
     def self.define(&block)
       class_eval(&block)
@@ -24,6 +32,20 @@ module Radical
       if self != Route
         replace_registered_route(self, subclass)
       end
+    end
+
+    def handle(request)
+      method, *path = request
+
+      if matches_path?(path)
+        { path.first => Typed::Coercer.coerce(self.class.type, send(method)) }
+      end
+    end
+
+    private
+
+    def matches_path?(path)
+      self.class.path == path
     end
   end
 end
