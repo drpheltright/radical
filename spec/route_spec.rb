@@ -4,11 +4,16 @@ describe Radical::Route do
 
     let(:route) do
       Radical::Route[:products, Radical::Typed::Array[product_schema]].define do
-        def get
-          [{ name: 'Car' }]
+        def initialize
+          @products = [{ name: 'Car' }]
         end
 
-        def set(product)
+        def get
+          @products
+        end
+
+        def set(products)
+          @products = products
         end
       end
     end
@@ -20,15 +25,14 @@ describe Radical::Route do
 
     context 'when setting data' do
       let(:updated_product) { { name: 'Bob' } }
-      subject { route.new }
+      let(:route_instance) { route.new }
 
       before(:each) do
-        expect(subject).to receive(:set).with([updated_product])
-        subject.handle([:set, :products, [updated_product]])
+        expect(route_instance).to receive(:set).with([updated_product]).and_call_original
       end
 
-      # it { is_expected.to include(products: array_including(a_hash_including(name: 'Bob'))) }
-      it do; end
+      subject { route_instance.handle([:set, :products, [updated_product]]) }
+      it { is_expected.to include(products: array_including(a_hash_including(name: 'Bob'))) }
     end
   end
 end
