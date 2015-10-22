@@ -1,5 +1,7 @@
 module Radical
   class Route
+    class MethodUndefinedError < RuntimeError; end
+
     def self.registered_routes
       @routes ||= []
     end
@@ -46,14 +48,17 @@ module Radical
     end
 
     def call(method, path)
-      if method == :set
+      return nil unless respond_to?(method)
+
+      case method
+      when :set
         *path, value = path
 
         if matches_path?(path)
           set(value)
           call(:get, path)
         end
-      elsif method == :get
+      when :get
         if matches_path?(path)
           { path.first => Typed::Coercer.coerce(self.class.type, get) }
         end

@@ -35,4 +35,10 @@ describe Radical::Route do
       it { is_expected.to include(products: array_including(a_hash_including(name: 'Bob'))) }
     end
   end
+
+  context 'when calling undefined method' do
+    let(:route) { Radical::Route[:name, String] }
+    subject { route.new.handle([:get, :name]) }
+    it { is_expected.to be_nil }
+  end
 end
