@@ -32,6 +32,8 @@ module Radical
 
     def self.inherited(subclass)
       if self != Route
+        subclass.path = self.path
+        subclass.type = self.type
         replace_registered_route(self, subclass)
       end
     end
