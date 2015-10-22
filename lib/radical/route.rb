@@ -36,16 +36,28 @@ module Radical
 
     def handle(request)
       method, *path = request
-
-      if matches_path?(path)
-        { path.first => Typed::Coercer.coerce(self.class.type, send(method)) }
-      end
+      call(method, path)
     end
 
     private
 
     def matches_path?(path)
       self.class.path == path
+    end
+
+    def call(method, path)
+      if method == :set
+        *path, value = path
+
+        if matches_path?(path)
+          set(value)
+          call(:get, path)
+        end
+      elsif method == :get
+        if matches_path?(path)
+          { path.first => Typed::Coercer.coerce(self.class.type, get) }
+        end
+      end
     end
   end
 end
