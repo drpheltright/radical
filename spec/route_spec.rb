@@ -1,5 +1,5 @@
 describe Radical::Route do
-  context 'when defining single path' do
+  context 'when route matches request with single path' do
     let(:product_schema) { Radical::Typed::Hash[name: String] }
 
     let(:route) do
