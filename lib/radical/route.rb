@@ -38,7 +38,7 @@ module Radical
 
     def handle(request)
       method, *path = request
-      call(method, path)
+      handle_method_and_path(method, path)
     end
 
     private
@@ -47,7 +47,7 @@ module Radical
       self.class.path == path
     end
 
-    def call(method, path)
+    def handle_method_and_path(method, path)
       return nil unless respond_to?(method)
 
       case method
@@ -60,7 +60,7 @@ module Radical
 
         if matches_path?(path)
           set(value)
-          call(:get, path)
+          handle_method_and_path(:get, path)
         end
       end
     end
