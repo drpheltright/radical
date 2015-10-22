@@ -1,22 +1,6 @@
 describe Radical::Route do
   context 'when route matches request with single path' do
-    let(:product_schema) { Radical::Typed::Hash[name: String] }
-
-    let(:route) do
-      Radical::Route[:products, Radical::Typed::Array[product_schema]].define do
-        def initialize
-          @products = [{ name: 'Car' }]
-        end
-
-        def get
-          @products
-        end
-
-        def set(products)
-          @products = products
-        end
-      end
-    end
+    let(:route) { SinglePathRouteMock }
 
     context 'when getting data' do
       subject { route.new.handle([:get, :products]) }
