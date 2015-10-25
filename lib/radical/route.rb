@@ -55,7 +55,15 @@ module Radical
       case method
       when :get
         if matches_path?(path)
-          { path.first => Typed::Coercer.coerce(self.class.type, get) }
+          {}.tap do |response|
+            *path, last_path = path.dup
+
+            last_nested_object = path.reduce(response) do |response, path|
+              response[path] = {}
+            end
+
+            last_nested_object[last_path] = Typed::Coercer.coerce(self.class.type, get)
+          end
         end
       when :set
         *path, value = path

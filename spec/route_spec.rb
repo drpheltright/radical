@@ -1,23 +1,37 @@
 describe Radical::Route do
-  context 'when route matches request with single path' do
+  context 'when setting route with single path' do
     let(:route) { SinglePathRouteMock }
+    let(:updated_product) { { name: 'Bob' } }
+    let(:route_instance) { route.new }
 
-    context 'when getting data' do
-      subject { route.new.handle([:get, :products]) }
-      it { is_expected.to include(products: array_including(a_hash_including(name: 'Car'))) }
+    before(:each) do
+      expect(route_instance).to receive(:set).with([updated_product]).and_call_original
     end
 
-    context 'when setting data' do
-      let(:updated_product) { { name: 'Bob' } }
-      let(:route_instance) { route.new }
+    subject { route_instance.handle([:set, :products, [updated_product]]) }
+    it { is_expected.to include(products: array_including(a_hash_including(name: 'Bob'))) }
+  end
 
-      before(:each) do
-        expect(route_instance).to receive(:set).with([updated_product]).and_call_original
-      end
+  context 'when getting route with single path' do
+    let(:route) { Radical::Route[:name, String].define { def get; :Luke; end } }
+    subject { route.new.handle([:get, :name]) }
+    it { is_expected.to include(name: 'Luke') }
+  end
 
-      subject { route_instance.handle([:set, :products, [updated_product]]) }
-      it { is_expected.to include(products: array_including(a_hash_including(name: 'Bob'))) }
-    end
+  context 'when getting route with two part path' do
+    let(:route) { Radical::Route[:person, :name, String].define { def get; :Luke; end } }
+    subject { route.new.handle([:get, :person, :name]) }
+    it { is_expected.to include(person: a_hash_including(name: 'Luke')) }
+  end
+
+  context 'when getting route with four part path' do
+    let(:route) { Radical::Route[:user, :profile, :friend, :name, String].define { def get; :Luke; end } }
+    subject { route.new.handle([:get, :user, :profile, :friend, :name]) }
+    it { is_expected.to include(user: a_hash_including(
+                                  profile: a_hash_including(
+                                    friend: a_hash_including(
+                                      name: 'Luke')))) }
+  end
   end
 
   context 'when route given request with method it does not support' do
