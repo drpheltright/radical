@@ -40,34 +40,40 @@ module Radical
 
     def handle(request)
       method, *path = request
-      handle_method_and_path(method, path)
+      return unless respond_to?(method)
+      route_method(method).handle(path)
     end
 
     private
 
-    def matches_path?(path)
-      self.class.path.each_with_index do |path_part, i|
-        return false unless path_part.is_a?(Arg) or path_part == path[i]
-      end
-
-      true
+    def route_method(method)
+      self.class.const_get(method.capitalize).new(self)
     end
 
-    def path_args(path)
-      path.each_with_index.reduce([]) do |args, (path_part, i)|
-        if self.class.path[i].is_a?(Arg)
-          args << path_part
-        else
-          args
+    class RouteMethod < Struct.new(:route)
+      private
+
+      def matches_path?(path)
+        route.class.path.each_with_index do |path_part, i|
+          return false unless path_part.is_a?(Arg) or path_part == path[i]
+        end
+
+        true
+      end
+
+      def path_args(path)
+        path.each_with_index.reduce([]) do |args, (path_part, i)|
+          if route.class.path[i].is_a?(Arg)
+            args << path_part
+          else
+            args
+          end
         end
       end
     end
 
-    def handle_method_and_path(method, path)
-      return nil unless respond_to?(method)
-
-      case method
-      when :get
+    class Get < RouteMethod
+      def handle(path)
         if matches_path?(path)
           {}.tap do |response|
             *path_parts, last_path_part = path.dup
@@ -76,16 +82,26 @@ module Radical
               response[path] = {}
             end
 
-            last_nested_object[last_path_part] = Typed::Coercer.coerce(self.class.type, get(*path_args(path)))
+            last_nested_object[last_path_part] = coerce(route.get(*path_args(path)))
           end
         end
-      when :set
+      end
+
+      private
+
+      def coerce(value)
+        Typed::Coercer.coerce(route.class.type, value)
+      end
+    end
+
+    class Set < RouteMethod
+      def handle(path)
         *path, value = path
 
         if matches_path?(path)
           args = path_args(path) << value
-          set(*args)
-          handle_method_and_path(:get, path)
+          route.set(*args)
+          route.handle([:get].concat(path))
         end
       end
     end
