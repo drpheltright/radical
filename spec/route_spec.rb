@@ -1,17 +1,4 @@
 describe Radical::Route do
-  context 'when setting route with single path' do
-    let(:route) { SinglePathRouteMock }
-    let(:updated_product) { { name: 'Bob' } }
-    let(:route_instance) { route.new }
-
-    before(:each) do
-      expect(route_instance).to receive(:set).with([updated_product]).and_call_original
-    end
-
-    subject { route_instance.handle([:set, :products, [updated_product]]) }
-    it { is_expected.to include(products: array_including(a_hash_including(name: 'Bob'))) }
-  end
-
   context 'when getting route with single path' do
     let(:route) { Radical::Route[:name, String].define { def get; :Luke; end } }
     subject { route.new.handle([:get, :name]) }
@@ -37,6 +24,19 @@ describe Radical::Route do
     let(:route) { Radical::Route[:users, Radical::Arg[:id], :name, String].define { def get(id); :Luke; end } }
     subject { route.new.handle([:get, :users, 1, :name]) }
     it { is_expected.to include(users: a_hash_including(1 => a_hash_including(name: 'Luke'))) }
+  end
+  
+  context 'when setting route with single path' do
+    let(:route) { SinglePathRouteMock }
+    let(:updated_product) { { name: 'Bob' } }
+    let(:route_instance) { route.new }
+
+    before(:each) do
+      expect(route_instance).to receive(:set).with([updated_product]).and_call_original
+    end
+
+    subject { route_instance.handle([:set, :products, [updated_product]]) }
+    it { is_expected.to include(products: array_including(a_hash_including(name: 'Bob'))) }
   end
 
   context 'when setting route with dynamic arg in path' do
