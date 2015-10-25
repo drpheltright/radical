@@ -32,6 +32,17 @@ describe Radical::Route do
                                     friend: a_hash_including(
                                       name: 'Luke')))) }
   end
+
+  context 'when getting route with dynamic arg in path' do
+    let(:route) { Radical::Route[:users, Radical::Arg[:id], :name, String].define { def get(id); :Luke; end } }
+    subject { route.new.handle([:get, :users, 1, :name]) }
+    it { is_expected.to include(users: a_hash_including(1 => a_hash_including(name: 'Luke'))) }
+  end
+
+  context 'when setting route with dynamic arg in path' do
+    let(:route) { MultiPathRouteMock }
+    subject { route.new.handle([:set, :users, 1, :name, 'Dave']) }
+    it { is_expected.to include(users: a_hash_including(1 => a_hash_including(name: 'Dave'))) }
   end
 
   context 'when route given request with method it does not support' do
