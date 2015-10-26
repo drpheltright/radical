@@ -1,5 +1,6 @@
 require 'radical/arg'
 require 'radical/route'
+require 'radical/router'
 require 'radical/typed/array'
 require 'radical/typed/coercer'
 require 'radical/typed/coercion_error'
