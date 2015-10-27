@@ -25,7 +25,7 @@ describe Radical::Route do
     subject { route.new.handle([:get, :users, 1, :name]) }
     it { is_expected.to include(users: a_hash_including(1 => a_hash_including(name: 'Luke'))) }
   end
-  
+
   context 'when setting route with single path' do
     let(:route) { SinglePathRouteMock }
     let(:updated_product) { { name: 'Bob' } }
