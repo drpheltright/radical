@@ -1,4 +1,5 @@
 require 'radical/arg'
+require 'radical/application'
 require 'radical/route'
 require 'radical/router'
 require 'radical/typed/array'
