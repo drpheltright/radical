@@ -2,8 +2,8 @@ module Radical
   class Router
     attr_reader :routes
 
-    def initialize(routes)
-      @routes = routes
+    def initialize(routes = nil)
+      @routes = routes || Route.registered_routes.map(&:new)
     end
 
     def route(requests)
