@@ -8,14 +8,14 @@ module Radical
 
     def route(requests)
       requests.reduce({}) do |response, request|
-        response.merge(handle_request(request))
+        handle_request(request, response)
       end
     end
 
     private
 
-    def handle_request(request)
-      routes.reduce({}) do |response, route|
+    def handle_request(request, response)
+      routes.reduce(response) do |response, route|
         deep_merge(response, route.handle(request) || {})
       end
     end

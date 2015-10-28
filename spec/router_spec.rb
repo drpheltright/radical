@@ -21,24 +21,42 @@ describe Radical::Router do
   end
 
   let(:post_route) do
-    Radical::Route[:post, Radical::Arg[:id], Radical::Typed::Hash[title: String]].define do
-      def get(id)
+    Radical::Route[:blog, :latest_post, Radical::Typed::Hash[title: String]].define do
+      def get
         { title: 'Very good post' }
       end
     end
   end
 
-  subject { Radical::Router.new(routes).route([[:get, :user, 1]])[:user][1] }
-
-  context 'when single request matches single route' do
-    let(:routes) { [user_profile_route, post_route].map(&:new) }
-    it { is_expected.to include(profile: a_hash_including(name: 'Luke')) }
-    it { is_expected.to_not include(:post) }
+  let(:author_route) do
+    Radical::Route[:blog, :featured_author, Radical::Typed::Hash[name: String]].define do
+      def get
+        { name: 'Luke' }
+      end
+    end
   end
 
-  context 'when single request matches two routes' do
+  context 'when single request matches single dynamic route' do
+    let(:routes) { [user_profile_route, post_route].map(&:new) }
+    subject { Radical::Router.new(routes).route([[:get, :user, 1]])[:user][1] }
+
+    it { is_expected.to include(profile: a_hash_including(name: 'Luke')) }
+    it { is_expected.to_not include(blog: a_kind_of(Hash)) }
+  end
+
+  context 'when single request matches two dynamic routes' do
     let(:routes) { [user_profile_route, user_cart_route].map(&:new) }
+    subject { Radical::Router.new(routes).route([[:get, :user, 1]])[:user][1] }
+
     it { is_expected.to include(profile: a_hash_including(name: 'Luke')) }
     it { is_expected.to include(cart: a_hash_including(line_items: be_a(Array))) }
+  end
+
+  context 'when single request matches two static routes' do
+    let(:routes) { [post_route, author_route].map(&:new) }
+    subject { Radical::Router.new(routes).route([[:get, :blog, :latest_post], [:get, :blog, :featured_author]]) }
+
+    it { is_expected.to include(blog: a_hash_including(:latest_post)) }
+    it { is_expected.to include(blog: a_hash_including(:featured_author)) }
   end
 end
