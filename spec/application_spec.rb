@@ -3,10 +3,10 @@ describe Radical::Application do
   let(:response) { app.call(request) }
 
   context 'when valid request made' do
-    let(:request) { Rack::MockRequest.env_for('/', params: { route: ['get.name'] }) }
+    let(:request) { Rack::MockRequest.env_for('/', params: { route: { name: nil } }) }
     let(:router) { double(route: { name: 'Luke' }) }
     before(:each) { app.router = router }
-    
+
     context 'then the application' do
       it 'should forward request to router with params' do
         response
@@ -28,7 +28,7 @@ describe Radical::Application do
   end
 
   context 'when valid request made and no route matches' do
-    let(:request) { Rack::MockRequest.env_for('/', params: { route: ['get.nothing'] }) }
+    let(:request) { Rack::MockRequest.env_for('/', params: { route: { nothing: nil } }) }
 
     context 'then the response status' do
       subject { response.status }
