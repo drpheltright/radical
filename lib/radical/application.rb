@@ -30,7 +30,14 @@ module Radical
 
     def parse_routes(routes)
       return [] unless routes.respond_to?(:map)
-      routes.map { |(route, _)| [:get].concat(route.split('.').map(&:to_sym)) }
+      
+      routes.map do |(route, value)|
+        if value.nil?
+          [:get].concat(route.split('.').map(&:to_sym))
+        else
+          [:set].concat(route.split('.').map(&:to_sym)).push(value)
+        end
+      end
     end
 
     def response(status, data)

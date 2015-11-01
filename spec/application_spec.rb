@@ -2,7 +2,7 @@ describe Radical::Application do
   let(:app) { Radical::Application.new }
   let(:response) { app.call(request) }
 
-  context 'when valid request made' do
+  context 'when valid get request made' do
     let(:request) { Rack::MockRequest.env_for('/', params: { route: { name: nil } }) }
     let(:router) { double(route: { name: 'Luke' }) }
     before(:each) { app.router = router }
@@ -11,6 +11,31 @@ describe Radical::Application do
       it 'should forward request to router with params' do
         response
         expect(router).to have_received(:route).with([[:get, :name]])
+      end
+    end
+
+    context 'and a route matches request' do
+      context 'then the response status' do
+        subject { response.status }
+        it { is_expected.to eq(200) }
+      end
+
+      context 'then the response body' do
+        subject { response.body.first }
+        it { is_expected.to eq(JSON.dump(name: 'Luke')) }
+      end
+    end
+  end
+
+  context 'when valid set request made' do
+    let(:request) { Rack::MockRequest.env_for('/', params: { route: { name: 'Bob' } }) }
+    let(:router) { double(route: { name: 'Luke' }) }
+    before(:each) { app.router = router }
+
+    context 'then the application' do
+      it 'should forward request to router with params' do
+        response
+        expect(router).to have_received(:route).with([[:set, :name, 'Bob']])
       end
     end
 
