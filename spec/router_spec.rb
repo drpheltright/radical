@@ -59,4 +59,11 @@ describe Radical::Router do
     it { is_expected.to include(blog: a_hash_including(:latest_post)) }
     it { is_expected.to include(blog: a_hash_including(:featured_author)) }
   end
+
+  context 'when one request out of two matches route' do
+    let(:routes) { [user_profile_route, user_cart_route].map(&:new) }
+    subject { Radical::Router.new(routes).route([[:get, :user, 1], [:get, :blog, :latest_post]]) }
+
+    it { expect { subject }.to raise_error(Radical::Router::RequestUnmatchedError) }
+  end
 end
