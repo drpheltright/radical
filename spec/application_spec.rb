@@ -26,6 +26,23 @@ describe Radical::Application do
       end
     end
 
+    context 'and only one route matches' do
+      let(:request) { Rack::MockRequest.env_for('/', params: { route: { products: nil, nothing: nil } }) }
+      let(:route) { SinglePathRouteMock.new }
+      let(:router) { Radical::Router.new([route]) }
+      before(:each) { app.router = router }
+
+      context 'then the response status' do
+        subject { response.status }
+        it { is_expected.to eq(404) }
+      end
+
+      context 'then the response body' do
+        subject { JSON.parse(response.body.first) }
+        it { is_expected.to include('error' => a_kind_of(String)) }
+      end
+    end
+
     context 'and no route matches' do
       let(:request) { Rack::MockRequest.env_for('/', params: { route: { nothing: nil } }) }
 
