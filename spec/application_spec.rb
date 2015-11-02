@@ -34,12 +34,13 @@ describe Radical::Application do
 
       context 'then the response status' do
         subject { response.status }
-        it { is_expected.to eq(404) }
+        it { is_expected.to eq(200) }
       end
 
       context 'then the response body' do
         subject { JSON.parse(response.body.first) }
-        it { is_expected.to include('error' => a_kind_of(String)) }
+        it { is_expected.to include('products' => a_kind_of(Array)) }
+        it { is_expected.to include('errors' => { 'get.nothing' => array_including(a_kind_of(String)) }) }
       end
     end
 
@@ -48,12 +49,12 @@ describe Radical::Application do
 
       context 'then the response status' do
         subject { response.status }
-        it { is_expected.to eq(404) }
+        it { is_expected.to eq(200) }
       end
 
       context 'then the response body' do
         subject { JSON.parse(response.body.first) }
-        it { is_expected.to include('error' => a_kind_of(String)) }
+        it { is_expected.to include('errors' => { 'get.nothing' => array_including(a_kind_of(String)) }) }
       end
     end
   end
@@ -93,7 +94,7 @@ describe Radical::Application do
 
     context 'then the response body' do
       subject { JSON.parse(response.body.first) }
-      it { is_expected.to include('error' => a_kind_of(String)) }
+      it { is_expected.to include('errors' => a_hash_including('global' => array_including(a_kind_of(String)))) }
     end
   end
 end

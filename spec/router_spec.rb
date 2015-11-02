@@ -64,6 +64,6 @@ describe Radical::Router do
     let(:routes) { [user_profile_route, user_cart_route].map(&:new) }
     subject { Radical::Router.new(routes).route([[:get, :user, 1], [:get, :blog, :latest_post]]) }
 
-    it { expect { subject }.to raise_error(Radical::Router::RequestUnmatchedError) }
+    it { is_expected.to include(errors: a_hash_including('get.blog.latest_post' => array_including(a_kind_of(String)))) }
   end
 end

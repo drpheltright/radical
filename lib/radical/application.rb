@@ -10,9 +10,9 @@ module Radical
       routes = parse_routes(request[:route])
 
       if routes.empty?
-        response(400, error: 'No routes provided.')
+        response(400, errors: { global: ['No routes provided.'] })
       else
-        match_routes(routes)
+        response(200, router.route(routes))
       end
     end
 
@@ -32,12 +32,6 @@ module Radical
           [:set].concat(route.split('.').map(&:to_sym)).push(value)
         end
       end
-    end
-
-    def match_routes(routes)
-      response(200, router.route(routes))
-    rescue Router::RequestUnmatchedError => e
-      response(404, error: 'No routes matched request.')
     end
 
     def response(status, data)

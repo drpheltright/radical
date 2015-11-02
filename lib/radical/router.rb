@@ -1,6 +1,12 @@
 module Radical
   class Router
-    class RequestUnmatchedError < RuntimeError; end
+    class RequestUnmatchedError < RuntimeError
+      attr_reader :request
+
+      def initialize(request)
+        @request = request
+      end
+    end
 
     attr_reader :routes
 
@@ -22,10 +28,10 @@ module Radical
       end
 
       if response.empty?
-        raise Router::RequestUnmatchedError.new(request.to_s)
+        { errors: { request.join('.') => ['No routes matched request.'] } }
+      else
+        response
       end
-
-      response
     end
 
     def deep_merge(hash, other_hash)
