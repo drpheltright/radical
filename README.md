@@ -64,4 +64,4 @@ Save this file as `config.ru`. Now provided you have `rack` and `radical`
 gems installed you should be able to now boot your API. If you haven't
 add a `Gemfile` alongside your API file and add both dependencies to it.
 
-Now run `rackup` and visit http://localhost:9292?route[user.1].
+Now run `rackup` and visit [http://localhost:9292?route[user.1]](http://localhost:9292?route[user.1]).
