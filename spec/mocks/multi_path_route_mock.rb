@@ -1,7 +1,9 @@
-product_schema = Radical::Typed::Hash[name: String]
-product_list_schema = Radical::Typed::Array[product_schema]
+include Radical
 
-class MultiPathRouteMock < Radical::Route[:users, Radical::Arg[id: Integer], :name, String]
+product_schema = Typed::Hash[name: String]
+product_list_schema = Typed::Array[product_schema]
+
+class MultiPathRouteMock < Route[:users, Typed::Arg[id: Integer], :name, String]
   def initialize
     @name = {}
   end

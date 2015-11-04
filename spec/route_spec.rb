@@ -25,12 +25,12 @@ describe Radical::Route do
     subject { route.new.handle([:get, :users, 1, :name]) }
 
     context 'and dynamic arg is string' do
-      let(:dynamic_arg) { Radical::Arg[:id] }
+      let(:dynamic_arg) { Radical::Typed::Arg[:id] }
       it { is_expected.to include(users: a_hash_including('1' => a_hash_including(name: 'Luke'))) }
     end
 
     context 'and dynamic arg is int' do
-      let(:dynamic_arg) { Radical::Arg[id: Integer] }
+      let(:dynamic_arg) { Radical::Typed::Arg[id: Integer] }
       it { is_expected.to include(users: a_hash_including(1 => a_hash_including(name: 'Luke'))) }
     end
   end

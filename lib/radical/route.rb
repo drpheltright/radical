@@ -55,7 +55,7 @@ module Radical
 
       def matches_path?(path)
         route.class.path.each_with_index do |path_part, i|
-          return false unless path_part.is_a?(Arg) or path_part == path[i]
+          return false unless path_part.is_a?(Typed::Arg) or path_part == path[i]
         end
 
         true
@@ -63,7 +63,7 @@ module Radical
 
       def parse_path_parts(path)
         path.each_with_index.map do |path_part, i|
-          if route.class.path[i].is_a?(Arg)
+          if route.class.path[i].is_a?(Typed::Arg)
             route.class.path[i].coerce(path_part.to_s)
           else
             path_part
@@ -73,7 +73,7 @@ module Radical
 
       def extract_path_args(path)
         path.each_with_index.reduce([]) do |args, (path_part, i)|
-          if route.class.path[i].is_a?(Arg)
+          if route.class.path[i].is_a?(Typed::Arg)
             args << route.class.path[i].coerce(path_part.to_s)
           else
             args

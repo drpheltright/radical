@@ -3,7 +3,7 @@ describe Radical::Router do
   let(:line_items_schema) { Radical::Typed::Array[Radical::Typed::Hash[id: Integer]] }
   let(:cart_schema) { Radical::Typed::Hash[line_items: line_items_schema] }
   let(:user_schema) { Radical::Typed::Hash[profile: profile_schema, cart: cart_schema] }
-  let(:dynamic_arg) { Radical::Arg[id: Integer] }
+  let(:dynamic_arg) { Radical::Typed::Arg[id: Integer] }
 
   let(:user_profile_route) do
     Radical::Route[:user, dynamic_arg, user_schema].define do
@@ -62,7 +62,7 @@ describe Radical::Router do
   end
 
   context 'when dynamic argument is typed as string' do
-    let(:dynamic_arg) { Radical::Arg[id: String] }
+    let(:dynamic_arg) { Radical::Typed::Arg[id: String] }
     let(:routes) { [user_profile_route.new] }
     subject { Radical::Router.new(routes).route([[:get, :user, 1]]) }
 
