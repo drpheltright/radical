@@ -51,7 +51,7 @@ module Schema
                               friend_ids: Radical::Typed::Array[Integer]]
 end
 
-Radical::Route[:user, Radical::Arg[id: Integer], Schema::User].define do
+Radical::Route[:user, Radical::Typed::Arg[id: Integer], Schema::User].define do
   def get(id)
     $database[:users][id]
   end
