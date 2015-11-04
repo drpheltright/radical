@@ -61,10 +61,20 @@ module Radical
         true
       end
 
-      def path_args(path)
+      def parse_path_parts(path)
+        path.each_with_index.map do |path_part, i|
+          if route.class.path[i].is_a?(Arg)
+            route.class.path[i].coerce(path_part.to_s)
+          else
+            path_part
+          end
+        end
+      end
+
+      def extract_path_args(path)
         path.each_with_index.reduce([]) do |args, (path_part, i)|
           if route.class.path[i].is_a?(Arg)
-            args << path_part
+            args << route.class.path[i].coerce(path_part.to_s)
           else
             args
           end
@@ -76,13 +86,13 @@ module Radical
       def handle(path)
         if matches_path?(path)
           {}.tap do |response|
-            *path_parts, last_path_part = path.dup
+            *path_parts, last_path_part = parse_path_parts(path)
 
             last_nested_object = path_parts.reduce(response) do |response, path|
               response[path] = {}
             end
 
-            last_nested_object[last_path_part] = coerce(route.get(*path_args(path)))
+            last_nested_object[last_path_part] = coerce(route.get(*extract_path_args(path)))
           end
         end
       end
@@ -99,7 +109,7 @@ module Radical
         *path, value = path
 
         if matches_path?(path)
-          args = path_args(path) << value
+          args = extract_path_args(path) << value
           route.set(*args)
           route.handle([:get].concat(path))
         end

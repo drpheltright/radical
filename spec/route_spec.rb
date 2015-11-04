@@ -21,9 +21,18 @@ describe Radical::Route do
   end
 
   context 'when getting route with dynamic arg in path' do
-    let(:route) { Radical::Route[:users, Radical::Arg[:id], :name, String].define { def get(id); :Luke; end } }
+    let(:route) { Radical::Route[:users, dynamic_arg, :name, String].define { def get(id); :Luke; end } }
     subject { route.new.handle([:get, :users, 1, :name]) }
-    it { is_expected.to include(users: a_hash_including(1 => a_hash_including(name: 'Luke'))) }
+
+    context 'and dynamic arg is string' do
+      let(:dynamic_arg) { Radical::Arg[:id] }
+      it { is_expected.to include(users: a_hash_including('1' => a_hash_including(name: 'Luke'))) }
+    end
+
+    context 'and dynamic arg is int' do
+      let(:dynamic_arg) { Radical::Arg[id: Integer] }
+      it { is_expected.to include(users: a_hash_including(1 => a_hash_including(name: 'Luke'))) }
+    end
   end
 
   context 'when setting route with single path' do
